@@ -51,6 +51,6 @@ jobs:
         working-directory: front
 
       - name: Run unit tests
-        run: npm run test
+        run: npm run test -- --no-watch --no-progress
         working-directory: front
 
