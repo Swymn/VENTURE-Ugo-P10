@@ -93,7 +93,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: swymn/openclassrooms-p10-backend
+          images: swymn/openclassrooms-p10
           tags: |
             type=sha,format=short,prefix=backend-
             type=raw,value=backend-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
