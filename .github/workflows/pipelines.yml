@@ -48,7 +48,7 @@ jobs:
         with:
           node-version: "24"
           cache: "npm"
-          cache-dependency-path: "./frontend/package-lock.json"
+          cache-dependency-path: "front/package-lock.json"
 
       - name: Install dependencies
         run: npm ci
@@ -93,10 +93,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: swymn/openclassrooms
+          images: swymn/openclassrooms-p10-backend
           tags: |
-            type=sha,format=short,prefix=
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=sha,format=short,prefix=backend-
+            type=raw,value=backend-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          flavor: |
+            latest=false
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
@@ -105,3 +107,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=swymn/openclassrooms-p10-backend:buildcache
+          cache-to: type=registry,ref=swymn/openclassrooms-p10-backend:buildcache,mode=max
