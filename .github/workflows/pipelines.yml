@@ -107,5 +107,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=swymn/openclassrooms-p10-backend:buildcache
-          cache-to: type=registry,ref=swymn/openclassrooms-p10-backend:buildcache,mode=max
+          cache-from: type=registry,ref=swymn/openclassrooms-p10:buildcache
+          cache-to: type=registry,ref=swymn/openclassrooms-p10:buildcache,mode=max
