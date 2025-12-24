@@ -182,7 +182,7 @@ jobs:
         with:
           projectBaseDir: front
           args: >
-            -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
+            -Dsonar.projectKey=swymn_venture-ugo-p10-frontend
             -Dsonar.organization=swymn
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
         env:
