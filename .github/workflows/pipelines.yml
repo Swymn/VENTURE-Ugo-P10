@@ -180,9 +180,10 @@ jobs:
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         with:
+          projectBaseDir: front
           args: >
-            -Dsonar.sources=frontend
             -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
+            -Dsonar.organization=swymn
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
@@ -221,5 +222,5 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=swymn -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
         working-directory: back
