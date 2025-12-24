@@ -182,7 +182,7 @@ jobs:
         with:
           args: >
             -Dsonar.sources=frontend
-            -Dsonar.projectKey=swymn_openclassrooms-p10
+            -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
