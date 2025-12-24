@@ -182,6 +182,7 @@ jobs:
         with:
           projectBaseDir: front
           args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.projectKey=swymn_venture-ugo-p10-frontend
             -Dsonar.organization=swymn
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
