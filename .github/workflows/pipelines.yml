@@ -189,7 +189,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=swymn_openclassrooms-p10
+            -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
             -Dsonar.organization=swymn
             -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }}
             -Dsonar.java.binaries=back/target/classes
