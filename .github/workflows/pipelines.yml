@@ -132,7 +132,7 @@ jobs:
         working-directory: front
 
       - name: Build Angular Application
-        run: npm run build -- --prod
+        run: npm run build
         working-directory: front
 
       - name: Set up Docker Buildx
