@@ -222,6 +222,6 @@ jobs:
 
       - name: Build and analyze
         env:
-          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=swymn -Dsonar.projectKey=Swymn_VENTURE-Ugo-P10
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=${{ github.ref_name }} -Dsonar.organization=swymn -Dsonar.projectKey=swymn_venture-ugo-p10-backend
         working-directory: back
