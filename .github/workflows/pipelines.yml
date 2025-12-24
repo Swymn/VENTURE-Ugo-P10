@@ -187,7 +187,7 @@ jobs:
             -Dsonar.organization=swymn
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
         env:
-          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         
   sonarqube_scan_backend:
     name: SonarQube Scan Backend
