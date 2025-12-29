@@ -35,6 +35,18 @@ jobs:
         run: mvn jacoco:report
         working-directory: back
 
+      - name: Upload backend coverage artifact (HTML)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-html
+          path: back/target/site/jacoco
+
+      - name: Upload backend coverage artifact (XML)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-xml
+          path: back/target/site/jacoco/jacoco.xml
+
   frontend-tests:
     name: Frontend Tests (Angular App)
     runs-on: ubuntu-latest
