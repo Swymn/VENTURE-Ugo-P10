@@ -70,112 +70,11 @@ jobs:
         run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
         working-directory: front
 
-  # ======= Dockerize Jobs =======
-  deploy_backend:
-    name: Deploy Backend (Spring Boot App)
-    runs-on: ubuntu-latest
-    needs: backend-tests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout version
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 11 for Backend Build
-        uses: actions/setup-java@v4
+      - name: Upload frontend coverage artifact
+        uses: actions/upload-artifact@v4
         with:
-          java-version: "11"
-          distribution: "temurin"
-          cache: "maven"
-
-      - name: Build Spring Boot Application
-        run: mvn clean package -DskipTests
-        working-directory: back
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract metadata (tags) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: swymn/openclassrooms-p10
-          tags: |
-            type=sha,format=short,prefix=backend-
-            type=raw,value=backend-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-          flavor: |
-            latest=false
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: back
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=swymn/openclassrooms-p10:buildcache
-          cache-to: type=registry,ref=swymn/openclassrooms-p10:buildcache,mode=max
-
-  deploy_frontend:
-    name: Deploy Frontend (Angular App)
-    runs-on: ubuntu-latest
-    needs: frontend-tests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "front/package-lock.json"
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: front
-
-      - name: Build Angular Application
-        run: npm run build
-        working-directory: front
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract metadata (tags) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: swymn/openclassrooms-p10
-          tags: |
-            type=sha,format=short,prefix=frontend-
-            type=raw,value=frontend-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-          flavor: |
-            latest=false
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: back
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=swymn/openclassrooms-p10:buildcache
-          cache-to: type=registry,ref=swymn/openclassrooms-p10:buildcache,mode=max
+          name: frontend-coverage
+          path: front/coverage
 
   # ======= Quality Gate =======
   sonarqube_scan_frontend:
@@ -237,3 +136,110 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.branch.name=${{ github.ref_name }} -Dsonar.organization=swymn -Dsonar.projectKey=swymn_venture-ugo-p10-backend
         working-directory: back
+
+  # ======= Dockerize Jobs =======
+  deploy_backend:
+    name: Deploy Backend (Spring Boot App)
+    runs-on: ubuntu-latest
+    needs: sonarqube_scan_backend
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout version
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 for Backend Build
+        uses: actions/setup-java@v4
+        with:
+          java-version: "11"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Build Spring Boot Application
+        run: mvn clean package -DskipTests
+        working-directory: back
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: swymn/openclassrooms-p10
+          tags: |
+            type=sha,format=short,prefix=backend-
+            type=raw,value=backend-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          flavor: |
+            latest=false
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: back
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=swymn/openclassrooms-p10:buildcache
+          cache-to: type=registry,ref=swymn/openclassrooms-p10:buildcache,mode=max
+
+  deploy_frontend:
+    name: Deploy Frontend (Angular App)
+    runs-on: ubuntu-latest
+    needs: sonarqube_scan_frontend
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "front/package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: front
+
+      - name: Build Angular Application
+        run: npm run build
+        working-directory: front
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: swymn/openclassrooms-p10
+          tags: |
+            type=sha,format=short,prefix=frontend-
+            type=raw,value=frontend-latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          flavor: |
+            latest=false
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: back
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=swymn/openclassrooms-p10:buildcache
+          cache-to: type=registry,ref=swymn/openclassrooms-p10:buildcache,mode=max
